@@ -8,7 +8,7 @@ public class User {
     private String email;
     private String phoneNumber;
     private String password;
-    public User() {
+    public User(int id, String name, String email, String password) {
 
     }
 

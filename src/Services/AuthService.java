@@ -12,7 +12,10 @@ public class AuthService {
 
     public boolean login(String email, String password) {
         User user = userRepository.getUserByEmail(email);
-        return user != null && user.password.equals(password);
+        if (user != null) {
+            return user.getPassword().equals(password);  // Ensure the comparison happens here
+        }
+        return false;
     }
 
     public void signUp(User user) {

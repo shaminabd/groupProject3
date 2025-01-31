@@ -17,4 +17,10 @@ public class PatientService {
     public List<Patient> getAllPatients() {
         return patientRepository.getAllPatients();
     }
+
+
+    // Delete a patient by ID
+    public void deletePatient(int patientId) {
+        patientRepository.deletePatient(patientId);
+    }
 }

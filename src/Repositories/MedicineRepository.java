@@ -7,4 +7,6 @@ public interface MedicineRepository {
     void addMedicine(Medicine medicine);
     Medicine getMedicineById(int id);
     List<Medicine> getAllMedicines();
+
+    void deleteMedicine(int medicineId);
 }

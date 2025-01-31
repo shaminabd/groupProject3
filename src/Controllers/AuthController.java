@@ -1,6 +1,6 @@
 package Controllers;
 
-import Model.User;
+import Model.*;
 import Services.AuthService;
 
 public class AuthController {
@@ -10,8 +10,17 @@ public class AuthController {
         this.authService = authService;
     }
 
-    public boolean login(String email, String password) {
-        return authService.login(email, password);
+    public User login(String email, String password) {
+        // Call the login method directly from authService
+        User user = authService.login(email, password);
+        if (user != null) {
+            // Check the user type based on class name
+            String role = user.getClass().getSimpleName();
+            System.out.println("Welcome, " + role + "! You are logged in as " + role + ".");
+            return user;
+        } else {
+            return null;
+        }
     }
 
     public boolean signUp(User user, String role) {

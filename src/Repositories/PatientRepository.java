@@ -7,4 +7,6 @@ public interface PatientRepository {
     void addPatient(Patient patient);
     Patient getPatientById(int id);
     List<Patient> getAllPatients();
+
+    void deletePatient(int patientId);
 }

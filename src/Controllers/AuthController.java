@@ -14,7 +14,7 @@ public class AuthController {
         return authService.login(email, password);
     }
 
-    public void signUp(User user) {
-        authService.signUp(user);
+    public boolean signUp(User user, String role) {
+        return authService.signUp(user, role);
     }
 }

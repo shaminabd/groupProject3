@@ -22,7 +22,7 @@ public class MedicineController {
         }
     }
 
-    // Remove medicine by ID
+
     public void removeMedicine(int medicineId) {
         medicineService.deleteMedicine(medicineId);
         System.out.println("Medicine with ID " + medicineId + " removed successfully.");

@@ -72,12 +72,12 @@ public class DatabaseInitializer {
 
 
     public static void addDefaultUsers(Statement statement) throws SQLException {
-        // Add an Admin user
+
         statement.execute("INSERT INTO users (name, email, password, role) VALUES " +
                 "('Admin User', 'admin@hospital.com', 'admin123', 'Admin') " +
                 "ON CONFLICT (email) DO NOTHING;");
 
-        // Add a Doctor user
+
         statement.execute("INSERT INTO doctors (name, email, password, specialization) VALUES " +
                 "('Dr. Smith', 'doctor@hospital.com', 'pass123', 'Cardiology') " +
                 "ON CONFLICT (email) DO NOTHING;");

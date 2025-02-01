@@ -19,7 +19,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public void addUser(User user) {
-        String query = "INSERT INTO users (name, email, password, role) VALUES (?, ?, ?)";
+        String query = "INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, user.getName());
             stmt.setString(2, user.getEmail());
@@ -43,7 +43,7 @@ public class UserRepositoryImpl implements UserRepository {
                 int id = rs.getInt("id");
                 String name = rs.getString("name");
                 String password = rs.getString("password");
-                String role = rs.getString("role");  // Role is fetched from DB
+                String role = rs.getString("role");
 
                 switch (role.toLowerCase()) {
                     case "admin":
@@ -59,13 +59,13 @@ public class UserRepositoryImpl implements UserRepository {
                     case "pharmacist":
                         return new Pharmacist(id, name, email, password);
                     default:
-                        return new User(id, name, email, password, role);  // Default to 'user' role
+                        return new User(id, name, email, password, role);
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;  // Return null if user not found
+        return null;
     }
 
 

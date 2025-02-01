@@ -23,7 +23,7 @@ public class AppointmentController {
         }
     }
 
-    // Remove appointment by ID
+
     public void removeAppointment(int appointmentId) {
         appointmentService.deleteAppointment(appointmentId);
         System.out.println("Appointment with ID " + appointmentId + " removed successfully.");

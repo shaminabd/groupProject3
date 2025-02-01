@@ -26,7 +26,7 @@ public class DoctorController {
         }
     }
 
-    // Remove doctor by ID
+
     public void removeDoctor(int doctorId) {
         doctorService.deleteDoctor(doctorId);
         System.out.println("Doctor with ID " + doctorId + " removed successfully.");

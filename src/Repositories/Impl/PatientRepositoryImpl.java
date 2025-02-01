@@ -24,12 +24,13 @@ public class PatientRepositoryImpl implements PatientRepository {
 
     @Override
     public void addPatient(Patient patient) {
-        String query = "INSERT INTO patients (name, email, password, medical_history) VALUES (?, ?, ?, ?)";
+        String query = "INSERT INTO patients (name, email, password, role, medical_history) VALUES (?, ?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, patient.getName());
             stmt.setString(2, patient.getEmail());
             stmt.setString(3, patient.getPassword());
-            stmt.setString(4, patient.getMedicalHistory());
+            stmt.setString(4, "patient");
+            stmt.setString(5, patient.getMedicalHistory());
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -43,7 +44,7 @@ public class PatientRepositoryImpl implements PatientRepository {
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                return new Patient(rs.getInt("id"), rs.getString("name"), rs.getString("email"), rs.getString("password"), rs.getString("medical_history"));
+                return new Patient(rs.getInt("id"), rs.getString("name"), rs.getString("email"), rs.getString("password"), "patient",rs.getString("medical_history"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -58,7 +59,7 @@ public class PatientRepositoryImpl implements PatientRepository {
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                patients.add(new Patient(rs.getInt("id"), rs.getString("name"), rs.getString("email"), rs.getString("password"), rs.getString("medical_history")));
+                patients.add(new Patient(rs.getInt("id"), rs.getString("name"), rs.getString("email"), rs.getString("password"), "patient",rs.getString("medical_history")));
             }
         } catch (SQLException e) {
             e.printStackTrace();

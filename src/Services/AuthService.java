@@ -30,25 +30,42 @@ public class AuthService {
     }
 
     public boolean signUp(User user, String role) {
-        // Logic to create user based on the role
         if (userRepository.getUserByEmail(user.getEmail()) != null) {
             return false; // User already exists
         }
 
-        if (role.equals("Admin")) {
-            user = new Admin(user.getId(), user.getName(), user.getEmail(), user.getPassword());
-        } else if (role.equals("Doctor")) {
-            user = new Doctor(user.getId(), user.getName(), user.getEmail(), user.getPassword(), "General");
-        } else if (role.equals("Nurse")) {
-            user = new Nurse(user.getId(), user.getName(), user.getEmail(), user.getPassword());
-        } else if (role.equals("Pharmacist")) {
-            user = new Pharmacist(user.getId(), user.getName(), user.getEmail(), user.getPassword());
-        } else {
-            // Default role
-            user = new Patient(user.getId(), user.getName(), user.getEmail(), user.getPassword(), "N/A");
+        int newUserId = userRepository.getNextUserId(); // Implement this method in repository
+
+        switch (role.toLowerCase()) {
+            case "admin":
+                user = new Admin(newUserId, user.getName(), user.getEmail(), user.getPassword(), "admin");
+                break;
+            case "doctor":
+                if (user instanceof Doctor) {
+                    Doctor doctor = (Doctor) user;
+                    user = new Doctor(newUserId, doctor.getName(), doctor.getEmail(), doctor.getPassword(), "doctor", doctor.getSpecialization());
+                }
+                break;
+            case "nurse":
+                user = new Nurse(newUserId, user.getName(), user.getEmail(), user.getPassword(), "nurse");
+                break;
+            case "pharmacist":
+                user = new Pharmacist(newUserId, user.getName(), user.getEmail(), user.getPassword(), "pharmacist");
+                break;
+            case "patient":
+                if (user instanceof Patient) {
+                    Patient patient = (Patient) user;
+                    user = new Patient(newUserId, patient.getName(), patient.getEmail(), patient.getPassword(), "patient", patient.getHealthHistory());
+                }
+                break;
+            default:
+                System.out.println("Invalid role. Registration failed.");
+                return false;
         }
 
         userRepository.addUser(user);
         return true; // User registered successfully
     }
+
+
 }

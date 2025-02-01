@@ -14,37 +14,34 @@ public class DatabaseInitializer {
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
              Statement statement = connection.createStatement()) {
 
-
+            // Create the users table with role column
             statement.execute("CREATE TABLE IF NOT EXISTS users (" +
                     "id SERIAL PRIMARY KEY, " +
                     "name VARCHAR(100), " +
                     "email VARCHAR(100) UNIQUE, " +
                     "password VARCHAR(100), " +
-                    "role VARCHAR(50));");
+                    "role VARCHAR(50) CHECK (role IN ('admin', 'doctor', 'patient', 'nurse', 'pharmacist')));");
 
-
+            // Create the doctors table with the role column
             statement.execute("CREATE TABLE IF NOT EXISTS doctors (" +
                     "id SERIAL PRIMARY KEY, " +
-                    "name VARCHAR(100), " +
-                    "email VARCHAR(100) UNIQUE, " +
-                    "password VARCHAR(100), " +
-                    "specialization VARCHAR(100));");
+                    "user_id INT UNIQUE REFERENCES users(id) ON DELETE CASCADE, " +  // Linking to users table
+                    "specialization VARCHAR(100), " +
+                    "role VARCHAR(50) DEFAULT 'doctor');");
 
-
+            // Create the patients table with the role column
             statement.execute("CREATE TABLE IF NOT EXISTS patients (" +
                     "id SERIAL PRIMARY KEY, " +
-                    "name VARCHAR(100), " +
-                    "email VARCHAR(100) UNIQUE, " +
-                    "password VARCHAR(100), " +
-                    "medical_history TEXT);");
+                    "user_id INT UNIQUE REFERENCES users(id) ON DELETE CASCADE, " +  // Linking to users table
+                    "medical_history TEXT, " +
+                    "role VARCHAR(50) DEFAULT 'patient');");
 
-
+            // Create other tables as needed
             statement.execute("CREATE TABLE IF NOT EXISTS appointments (" +
                     "id SERIAL PRIMARY KEY, " +
                     "doctor_id INT REFERENCES doctors(id), " +
                     "patient_id INT REFERENCES patients(id), " +
                     "appointment_date TIMESTAMP);");
-
 
             statement.execute("CREATE TABLE IF NOT EXISTS reports (" +
                     "id SERIAL PRIMARY KEY, " +
@@ -52,17 +49,14 @@ public class DatabaseInitializer {
                     "patient_id INT REFERENCES patients(id), " +
                     "details TEXT);");
 
-
             statement.execute("CREATE TABLE IF NOT EXISTS medicines (" +
                     "id SERIAL PRIMARY KEY, " +
                     "name VARCHAR(100), " +
                     "dosage VARCHAR(50));");
 
-
             statement.execute("CREATE TABLE IF NOT EXISTS beds (" +
                     "id SERIAL PRIMARY KEY, " +
                     "is_occupied BOOLEAN);");
-
 
             statement.execute("CREATE TABLE IF NOT EXISTS hospitals (" +
                     "id SERIAL PRIMARY KEY, " +
@@ -75,6 +69,7 @@ public class DatabaseInitializer {
             System.out.println("Error initializing the database.");
         }
     }
+
 
     public static void addDefaultUsers(Statement statement) throws SQLException {
         // Add an Admin user

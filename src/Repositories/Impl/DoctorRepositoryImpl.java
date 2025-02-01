@@ -24,12 +24,13 @@ public class DoctorRepositoryImpl implements DoctorRepository {
 
     @Override
     public void addDoctor(Doctor doctor) {
-        String query = "INSERT INTO doctors (name, email, password, specialization) VALUES (?, ?, ?, ?)";
+        String query = "INSERT INTO doctors (name, email, password, role,specialization) VALUES (?, ?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, doctor.getName());
             stmt.setString(2, doctor.getEmail());
             stmt.setString(3, doctor.getPassword());
-            stmt.setString(4, doctor.getSpecialization());
+            stmt.setString(4, "doctor");
+            stmt.setString(5, doctor.getSpecialization());
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -43,7 +44,7 @@ public class DoctorRepositoryImpl implements DoctorRepository {
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                return new Doctor(rs.getInt("id"), rs.getString("name"), rs.getString("email"), rs.getString("password"), rs.getString("specialization"));
+                return new Doctor(rs.getInt("id"), rs.getString("name"), rs.getString("email"), rs.getString("password"), "doctor",rs.getString("specialization"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -58,7 +59,7 @@ public class DoctorRepositoryImpl implements DoctorRepository {
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                doctors.add(new Doctor(rs.getInt("id"), rs.getString("name"), rs.getString("email"), rs.getString("password"), rs.getString("specialization")));
+                doctors.add(new Doctor(rs.getInt("id"), rs.getString("name"), rs.getString("email"), rs.getString("password"), "doctor",rs.getString("specialization")));
             }
         } catch (SQLException e) {
             e.printStackTrace();

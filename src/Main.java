@@ -59,7 +59,7 @@ public class Main {
             String adminEmail = scanner.nextLine();
             System.out.print("Enter Admin Password: ");
             String adminPassword = scanner.nextLine();
-            admin = new Admin(1, "Admin", adminEmail, adminPassword);
+            admin = new Admin(1, "Admin", adminEmail, adminPassword, "admin");
             userRepository.addUser(admin);
             System.out.println("Admin registered successfully.");
         } else {
@@ -91,19 +91,19 @@ public class Main {
                 if (role.equalsIgnoreCase("Doctor")) {
                     System.out.print("Enter Doctor Specialization: ");
                     String specialization = scanner.nextLine();
-                    user = new Doctor(1, name, email, password, specialization);
+                    user = new Doctor(1, name, email, password, specialization); // role is now set in constructor
                 } else if (role.equalsIgnoreCase("Patient")) {
                     System.out.print("Enter Patient Health History: ");
                     String healthHistory = scanner.nextLine();
-                    user = new Patient(1, name, email, password, healthHistory);
+                    user = new Patient(1, name, email, password, healthHistory); // role is now set in constructor
                 } else if (role.equalsIgnoreCase("Nurse")) {
-                    user = new Nurse(1, name, email, password);
+                    user = new Nurse(1, name, email, password); // role is now set in constructor
                 } else if (role.equalsIgnoreCase("Pharmacist")) {
-                    user = new Pharmacist(1, name, email, password);
+                    user = new Pharmacist(1, name, email, password); // role is now set in constructor
                 }
 
                 if (user != null) {
-                    boolean isRegistered = authController.signUp(user, role);
+                    boolean isRegistered = authController.signUp(user, email);  // Removed redundant role argument
                     if (isRegistered) {
                         System.out.println(role + " registered successfully.");
                     } else {
@@ -112,6 +112,8 @@ public class Main {
                 } else {
                     System.out.println("Invalid role selected. Please choose a valid role.");
                 }
+
+            }
             } else if (action.equalsIgnoreCase("login")) {
                 // Login process
                 User loggedInUser = null;
@@ -277,6 +279,7 @@ public class Main {
                             break;
                         case 11:
                             System.out.println("Logging out...");
+                            loggedInUser = null; // Logout the user
                             break;
                         case 12:
                             System.out.println("Exiting the system...");
@@ -286,7 +289,7 @@ public class Main {
                             System.out.println("Invalid choice, please try again.");
                     }
 
-                    if (choice == 11) {
+                    if (loggedInUser == null) {
                         break;  // Exit the menu after logging out
                     }
                 }

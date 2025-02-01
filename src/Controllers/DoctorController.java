@@ -18,4 +18,17 @@ public class DoctorController {
     public List<Doctor> getAllDoctors() {
         return doctorService.getAllDoctors();
     }
+
+    public void viewDoctors() {
+        List<Doctor> doctors = doctorService.getAllDoctors();
+        for (Doctor doctor : doctors) {
+            System.out.println("ID: " + doctor.getId() + ", Name: " + doctor.getName() + ", Specialization: " + doctor.getSpecialization());
+        }
+    }
+
+    // Remove doctor by ID
+    public void removeDoctor(int doctorId) {
+        doctorService.deleteDoctor(doctorId);
+        System.out.println("Doctor with ID " + doctorId + " removed successfully.");
+    }
 }

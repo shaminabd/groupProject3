@@ -1,6 +1,6 @@
 package Controllers;
 
-import Model.User;
+import Model.*;
 import Services.AuthService;
 
 public class AuthController {
@@ -10,9 +10,18 @@ public class AuthController {
         this.authService = authService;
     }
 
-    public boolean login(String email, String password) {
-        return authService.login(email, password);
+    public User login(String email, String password) {
+        User user = authService.login(email, password);
+
+        if (user != null) {
+            System.out.println("Login successful as " + user.getRole());
+            return user;
+        }
+        System.out.println("Invalid credentials.");
+        return null;
     }
+
+
 
     public boolean signUp(User user, String role) {
         return authService.signUp(user, role);

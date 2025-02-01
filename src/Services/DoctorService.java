@@ -19,4 +19,9 @@ public class DoctorService {
     public List<Doctor> getAllDoctors() {
         return doctorRepository.getAllDoctors();
     }
+
+
+    public void deleteDoctor(int doctorId) {
+        doctorRepository.deleteDoctor(doctorId);
+    }
 }

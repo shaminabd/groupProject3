@@ -18,4 +18,16 @@ public class PatientController {
     public List<Patient> getAllPatients() {
         return patientService.getAllPatients();
     }
+    public void viewPatients() {
+        List<Patient> patients = patientService.getAllPatients();
+        for (Patient patient : patients) {
+            System.out.println("ID: " + patient.getId() + ", Name: " + patient.getName() + ", Medical History: " + patient.getMedicalHistory());
+        }
+    }
+
+    // Remove patient by ID
+    public void removePatient(int patientId) {
+        patientService.deletePatient(patientId);
+        System.out.println("Patient with ID " + patientId + " removed successfully.");
+    }
 }

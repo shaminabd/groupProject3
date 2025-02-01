@@ -44,7 +44,7 @@ public class PatientRepositoryImpl implements PatientRepository {
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                return new Patient(rs.getInt("id"), rs.getString("name"), rs.getString("email"), rs.getString("password"), "patient",rs.getString("medical_history"));
+                return new Patient(rs.getInt("id"), rs.getString("name"), rs.getString("email"), rs.getString("password"),rs.getString("medical_history"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -59,7 +59,7 @@ public class PatientRepositoryImpl implements PatientRepository {
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                patients.add(new Patient(rs.getInt("id"), rs.getString("name"), rs.getString("email"), rs.getString("password"), "patient",rs.getString("medical_history")));
+                patients.add(new Patient(rs.getInt("id"), rs.getString("name"), rs.getString("email"), rs.getString("password"),rs.getString("medical_history")));
             }
         } catch (SQLException e) {
             e.printStackTrace();

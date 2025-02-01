@@ -20,7 +20,7 @@ public class Main {
         DatabaseInitializer.initializeDatabase();
         System.out.println("Hospital Management System Starting...");
 
-        // Repositories
+
         UserRepositoryImpl userRepository = new UserRepositoryImpl();
         DoctorRepositoryImpl doctorRepository = new DoctorRepositoryImpl();
         PatientRepositoryImpl patientRepository = new PatientRepositoryImpl();
@@ -30,7 +30,7 @@ public class Main {
         BedRepositoryImpl bedRepository = new BedRepositoryImpl();
         HospitalRepositoryImpl hospitalRepository = new HospitalRepositoryImpl();
 
-        // Services
+
         AuthService authService = new AuthService(userRepository);
         DoctorService doctorService = new DoctorService(doctorRepository);
         PatientService patientService = new PatientService(patientRepository);
@@ -40,7 +40,7 @@ public class Main {
         BedService bedService = new BedService(bedRepository);
         HospitalService hospitalService = new HospitalService(hospitalRepository);
 
-        // Controllers
+
         AuthController authController = new AuthController(authService);
         DoctorController doctorController = new DoctorController(doctorService);
         PatientController patientController = new PatientController(patientService);
@@ -50,7 +50,7 @@ public class Main {
         BedController bedController = new BedController(bedService);
         HospitalController hospitalController = new HospitalController(hospitalService);
 
-        // Initialize Admin if not exists
+
         User admin = userRepository.getUserByEmail("admin@hospital.com");
 
         if (admin == null) {
@@ -66,7 +66,7 @@ public class Main {
             System.out.println("Admin already exists. Proceeding...");
         }
 
-        // Main loop for registration/login
+
         while (true) {
             System.out.println("Do you want to register, login, or quit? (register/login/quit): ");
             String action = scanner.nextLine();
@@ -91,30 +91,33 @@ public class Main {
                 if (role.equalsIgnoreCase("Doctor")) {
                     System.out.print("Enter Doctor Specialization: ");
                     String specialization = scanner.nextLine();
-                    user = new Doctor(1, name, email, password, specialization); // role is now set in constructor
+                    user = new Doctor(1, name, email, password, specialization);
                 } else if (role.equalsIgnoreCase("Patient")) {
                     System.out.print("Enter Patient Health History: ");
                     String healthHistory = scanner.nextLine();
-                    user = new Patient(1, name, email, password, healthHistory); // role is now set in constructor
+                    user = new Patient(1, name, email, password, healthHistory);
                 } else if (role.equalsIgnoreCase("Nurse")) {
-                    user = new Nurse(1, name, email, password); // role is now set in constructor
+                    user = new Nurse(1, name, email, password);
                 } else if (role.equalsIgnoreCase("Pharmacist")) {
-                    user = new Pharmacist(1, name, email, password); // role is now set in constructor
+                    user = new Pharmacist(1, name, email, password);
+                } else {
+                    System.out.println("Invalid role. Registration failed.");
+                    continue;
                 }
 
-                if (user != null) {
-                    boolean isRegistered = authController.signUp(user, email);  // Removed redundant role argument
+                if (userRepository.getUserByEmail(email) != null) {
+                    System.out.println(role + " already exists.");
+                } else {
+                    boolean isRegistered = authController.signUp(user, role);
                     if (isRegistered) {
                         System.out.println(role + " registered successfully.");
                     } else {
-                        System.out.println(role + " already exists.");
+                        System.out.println("An error occurred during registration.");
                     }
-                } else {
-                    System.out.println("Invalid role selected. Please choose a valid role.");
                 }
 
             }
-            } else if (action.equalsIgnoreCase("login")) {
+             else if (action.equalsIgnoreCase("login")) {
                 // Login process
                 User loggedInUser = null;
 
@@ -129,7 +132,7 @@ public class Main {
                         System.out.println("Invalid credentials. Try again.");
                     }
                 }
-                // Check user role after login
+
                 if (loggedInUser instanceof Admin) {
                     System.out.println("Welcome, Admin! You are logged in as Admin.");
                 } else if (loggedInUser instanceof Doctor) {
@@ -141,7 +144,7 @@ public class Main {
                 } else if (loggedInUser instanceof Pharmacist) {
                     System.out.println("Welcome, Pharmacist! You are logged in as Pharmacist.");
                 }
-                // Main Menu for Logged-in User
+
                 while (true) {
                     System.out.println("\nHospital Management System Menu:");
                     if (loggedInUser instanceof Admin) {
@@ -175,7 +178,7 @@ public class Main {
 
                     System.out.print("Enter your choice: ");
                     int choice = scanner.nextInt();
-                    scanner.nextLine();  // Clear the buffer
+                    scanner.nextLine();
 
                     switch (choice) {
                         case 1:
@@ -191,7 +194,7 @@ public class Main {
                             if (loggedInUser instanceof Admin) {
                                 System.out.print("Enter Doctor ID to remove: ");
                                 int doctorId = scanner.nextInt();
-                                scanner.nextLine();  // Clear the buffer
+                                scanner.nextLine();
                                 doctorController.removeDoctor(doctorId);
                             } else if (loggedInUser instanceof Doctor) {
                                 System.out.print("Enter Report Details: ");
@@ -214,7 +217,7 @@ public class Main {
                             if (loggedInUser instanceof Admin) {
                                 System.out.print("Enter Patient ID to remove: ");
                                 int patientId = scanner.nextInt();
-                                scanner.nextLine();  // Clear the buffer
+                                scanner.nextLine();
                                 patientController.removePatient(patientId);
                             } else {
                                 System.out.println("Access Denied.");
@@ -231,7 +234,7 @@ public class Main {
                             if (loggedInUser instanceof Admin) {
                                 System.out.print("Enter Appointment ID to remove: ");
                                 int appointmentId = scanner.nextInt();
-                                scanner.nextLine();  // Clear the buffer
+                                scanner.nextLine();
                                 appointmentController.removeAppointment(appointmentId);
                             } else {
                                 System.out.println("Access Denied.");
@@ -248,7 +251,7 @@ public class Main {
                             if (loggedInUser instanceof Admin) {
                                 System.out.print("Enter Medicine ID to remove: ");
                                 int medicineId = scanner.nextInt();
-                                scanner.nextLine();  // Clear the buffer
+                                scanner.nextLine();
                                 medicineController.removeMedicine(medicineId);
                             } else {
                                 System.out.println("Access Denied.");
@@ -279,7 +282,7 @@ public class Main {
                             break;
                         case 11:
                             System.out.println("Logging out...");
-                            loggedInUser = null; // Logout the user
+                            loggedInUser = null;
                             break;
                         case 12:
                             System.out.println("Exiting the system...");
@@ -290,7 +293,7 @@ public class Main {
                     }
 
                     if (loggedInUser == null) {
-                        break;  // Exit the menu after logging out
+                        break;
                     }
                 }
             }

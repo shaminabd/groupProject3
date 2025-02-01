@@ -18,7 +18,7 @@ public class MedicineRepositoryImpl implements MedicineRepository {
 
     public MedicineRepositoryImpl() {
         try {
-            // Establish a connection to the database
+
             this.connection =   DatabaseConnection.getConnection();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -68,7 +68,7 @@ public class MedicineRepositoryImpl implements MedicineRepository {
         return medicines;
     }
 
-    // Remove medicine by ID
+
     @Override
     public void deleteMedicine(int medicineId) {
         String query = "DELETE FROM medicines WHERE id = ?";

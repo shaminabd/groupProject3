@@ -10,31 +10,31 @@ public class AuthService {
         this.userRepository = userRepository;
     }
 
-    // Authenticate user and return the correct type
+
     public User login(String email, String password) {
-        // Authenticate user directly in the login method
+
         User user = userRepository.getUserByEmail(email);
         if (user == null) {
             System.out.println("No user found with email: " + email);
             return null;
         }
 
-        // Check if the entered password matches the stored password
+
         if (user.getPassword().equals(password)) {
-            System.out.println("Password match successful for: " + user.getEmail());  // Debugging line
+            System.out.println("Password match successful for: " + user.getEmail());
             return user;
         } else {
             System.out.println("Password mismatch.");
-            return null; // Return null if credentials are incorrect
+            return null;
         }
     }
 
     public boolean signUp(User user, String role) {
         if (userRepository.getUserByEmail(user.getEmail()) != null) {
-            return false; // User already exists
+            return false;
         }
 
-        int newUserId = userRepository.getNextUserId(); // Implement this method in repository
+        int newUserId = userRepository.getNextUserId();
 
         switch (role.toLowerCase()) {
             case "admin":
@@ -43,19 +43,19 @@ public class AuthService {
             case "doctor":
                 if (user instanceof Doctor) {
                     Doctor doctor = (Doctor) user;
-                    user = new Doctor(newUserId, doctor.getName(), doctor.getEmail(), doctor.getPassword(), "doctor", doctor.getSpecialization());
+                    user = new Doctor(newUserId, doctor.getName(), doctor.getEmail(), doctor.getPassword(), doctor.getSpecialization());
                 }
                 break;
             case "nurse":
-                user = new Nurse(newUserId, user.getName(), user.getEmail(), user.getPassword(), "nurse");
+                user = new Nurse(newUserId, user.getName(), user.getEmail(), user.getPassword());
                 break;
             case "pharmacist":
-                user = new Pharmacist(newUserId, user.getName(), user.getEmail(), user.getPassword(), "pharmacist");
+                user = new Pharmacist(newUserId, user.getName(), user.getEmail(), user.getPassword());
                 break;
             case "patient":
                 if (user instanceof Patient) {
                     Patient patient = (Patient) user;
-                    user = new Patient(newUserId, patient.getName(), patient.getEmail(), patient.getPassword(), "patient", patient.getHealthHistory());
+                    user = new Patient(newUserId, patient.getName(), patient.getEmail(), patient.getPassword(), patient.getHealthHistory());
                 }
                 break;
             default:
@@ -64,7 +64,7 @@ public class AuthService {
         }
 
         userRepository.addUser(user);
-        return true; // User registered successfully
+        return true;
     }
 
 

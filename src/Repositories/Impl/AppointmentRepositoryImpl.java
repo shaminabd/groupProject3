@@ -1,6 +1,7 @@
 package Repositories.Impl;
 
 import Config.DatabaseConnection;
+import Config.IDB;
 import Model.Appointment;
 import Repositories.AppointmentRepository;
 
@@ -13,20 +14,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AppointmentRepositoryImpl implements AppointmentRepository {
-    private Connection connection;
+    private IDB dbConnection;
 
     public AppointmentRepositoryImpl() {
-        try {
-            this.connection = DatabaseConnection.getConnection();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        this.dbConnection = new DatabaseConnection();
     }
 
     @Override
     public void bookAppointment(Appointment appointment) {
         String query = "INSERT INTO appointments (patient_id, doctor_id, appointment_date) VALUES (?, ?, ?)";
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+        try (Connection connection = dbConnection.getConnection();
+                PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setInt(1, appointment.getPatientId());
             stmt.setInt(2, appointment.getDoctorId());
             stmt.setDate(3, java.sql.Date.valueOf(appointment.getDate()));
@@ -40,7 +38,8 @@ public class AppointmentRepositoryImpl implements AppointmentRepository {
     public List<Appointment> getAppointmentsByPatient(int patientId) {
         List<Appointment> appointments = new ArrayList<>();
         String query = "SELECT * FROM appointments WHERE patient_id = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+        try (  Connection connection = dbConnection.getConnection();
+                PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setInt(1, patientId);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
@@ -57,7 +56,8 @@ public class AppointmentRepositoryImpl implements AppointmentRepository {
     public List<Appointment> getAllAppointments() {
         List<Appointment> appointments = new ArrayList<>();
         String query = "SELECT * FROM appointments";
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+        try (Connection connection = dbConnection.getConnection();
+                PreparedStatement stmt = connection.prepareStatement(query)) {
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 appointments.add(new Appointment(rs.getInt("id"), rs.getInt("patient_id"), rs.getInt("doctor_id"), rs.getDate("appointment_date").toLocalDate()));
@@ -72,7 +72,8 @@ public class AppointmentRepositoryImpl implements AppointmentRepository {
     @Override
     public void deleteAppointment(int appointmentId) {
         String query = "DELETE FROM appointments WHERE id = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+        try (Connection connection = dbConnection.getConnection();
+                PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setInt(1, appointmentId);
             stmt.executeUpdate();
         } catch (SQLException e) {

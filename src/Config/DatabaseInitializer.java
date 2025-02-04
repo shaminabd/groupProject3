@@ -14,7 +14,7 @@ public class DatabaseInitializer {
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
              Statement statement = connection.createStatement()) {
 
-            // Create the users table with role column
+
             statement.execute("CREATE TABLE IF NOT EXISTS users (" +
                     "id SERIAL PRIMARY KEY, " +
                     "name VARCHAR(100), " +
@@ -22,21 +22,21 @@ public class DatabaseInitializer {
                     "password VARCHAR(100), " +
                     "role VARCHAR(50) CHECK (role IN ('admin', 'doctor', 'patient', 'nurse', 'pharmacist')));");
 
-            // Create the doctors table with the role column
+
             statement.execute("CREATE TABLE IF NOT EXISTS doctors (" +
                     "id SERIAL PRIMARY KEY, " +
-                    "user_id INT UNIQUE REFERENCES users(id) ON DELETE CASCADE, " +  // Linking to users table
+                    "user_id INT UNIQUE REFERENCES users(id) ON DELETE CASCADE, " +
                     "specialization VARCHAR(100), " +
                     "role VARCHAR(50) DEFAULT 'doctor');");
 
-            // Create the patients table with the role column
+
             statement.execute("CREATE TABLE IF NOT EXISTS patients (" +
                     "id SERIAL PRIMARY KEY, " +
-                    "user_id INT UNIQUE REFERENCES users(id) ON DELETE CASCADE, " +  // Linking to users table
+                    "user_id INT UNIQUE REFERENCES users(id) ON DELETE CASCADE, " +
                     "medical_history TEXT, " +
                     "role VARCHAR(50) DEFAULT 'patient');");
 
-            // Create other tables as needed
+
             statement.execute("CREATE TABLE IF NOT EXISTS appointments (" +
                     "id SERIAL PRIMARY KEY, " +
                     "doctor_id INT REFERENCES doctors(id), " +

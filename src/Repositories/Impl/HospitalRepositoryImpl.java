@@ -1,6 +1,7 @@
 package Repositories.Impl;
 
 import Config.DatabaseConnection;
+import Config.IDB;
 import Model.Hospital;
 import Repositories.HospitalRepository;
 
@@ -9,20 +10,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class HospitalRepositoryImpl implements HospitalRepository {
-    private Connection connection;
+    private IDB dbConnection;
 
     public HospitalRepositoryImpl() {
-        try {
-            this.connection = DatabaseConnection.getConnection();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        this.dbConnection = new DatabaseConnection();
     }
 
     @Override
     public void addHospital(Hospital hospital) {
         String query = "INSERT INTO hospitals (name, location) VALUES (?, ?)";
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+        try (Connection connection = dbConnection.getConnection();
+                PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, hospital.getName());
             stmt.setString(2, hospital.getLocation());
             stmt.executeUpdate();
@@ -34,7 +32,8 @@ public class HospitalRepositoryImpl implements HospitalRepository {
     @Override
     public Hospital getHospitalById(int id) {
         String query = "SELECT * FROM hospitals WHERE id = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+        try (Connection connection = dbConnection.getConnection();
+                PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -50,7 +49,8 @@ public class HospitalRepositoryImpl implements HospitalRepository {
     public List<Hospital> getAllHospitals() {
         List<Hospital> hospitals = new ArrayList<>();
         String query = "SELECT * FROM hospitals";
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+        try (Connection connection = dbConnection.getConnection();
+                PreparedStatement stmt = connection.prepareStatement(query)) {
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 hospitals.add(new Hospital(rs.getInt("id"), rs.getString("name"), rs.getString("location")));

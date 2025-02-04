@@ -24,7 +24,7 @@ public class PatientRepositoryImpl implements PatientRepository {
 
     @Override
     public void addPatient(Patient patient) {
-        String query = "INSERT INTO patients (name, email, password, role, medical_history) VALUES (?, ?, ?, ?)";
+        String query = "INSERT INTO patients (name, email, password, role, medical_history) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, patient.getName());
             stmt.setString(2, patient.getEmail());

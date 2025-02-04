@@ -12,7 +12,6 @@ public class AuthService {
 
 
     public User login(String email, String password) {
-
         User user = userRepository.getUserByEmail(email);
         if (user == null) {
             System.out.println("No user found with email: " + email);

@@ -1,6 +1,7 @@
 package Repositories.Impl;
 
 import Config.DatabaseConnection;
+import Config.IDB;
 import Model.Doctor;
 import Repositories.DoctorRepository;
 
@@ -12,20 +13,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DoctorRepositoryImpl implements DoctorRepository {
-    private Connection connection;
+    private IDB dbConnection;
 
     public DoctorRepositoryImpl() {
-        try {
-            this.connection = DatabaseConnection.getConnection();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        this.dbConnection = new DatabaseConnection();
     }
 
     @Override
     public void addDoctor(Doctor doctor) {
-        String query = "INSERT INTO doctors (name, email, password, role,specialization) VALUES (?, ?, ?, ?)";
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+        String query = "INSERT INTO doctors (name, email, password, role,specialization) VALUES (?, ?, ?, ?, ?)";
+        try (Connection connection = dbConnection.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, doctor.getName());
             stmt.setString(2, doctor.getEmail());
             stmt.setString(3, doctor.getPassword());
@@ -40,7 +38,8 @@ public class DoctorRepositoryImpl implements DoctorRepository {
     @Override
     public Doctor getDoctorById(int id) {
         String query = "SELECT * FROM doctors WHERE id = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+        try (Connection connection = dbConnection.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -56,7 +55,8 @@ public class DoctorRepositoryImpl implements DoctorRepository {
     public List<Doctor> getAllDoctors() {
         List<Doctor> doctors = new ArrayList<>();
         String query = "SELECT * FROM doctors";
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+        try (Connection connection = dbConnection.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(query)) {
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 doctors.add(new Doctor(rs.getInt("id"), rs.getString("name"), rs.getString("email"), rs.getString("password"), rs.getString("specialization")));
@@ -70,7 +70,8 @@ public class DoctorRepositoryImpl implements DoctorRepository {
     @Override
     public void updateDoctor(Doctor doctor) {
         String query = "UPDATE doctors SET name = ?, email = ?, password = ?, specialization = ? WHERE id = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+        try (Connection connection = dbConnection.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, doctor.getName());
             stmt.setString(2, doctor.getEmail());
             stmt.setString(3, doctor.getPassword());
@@ -85,7 +86,8 @@ public class DoctorRepositoryImpl implements DoctorRepository {
     @Override
     public void deleteDoctor(int id) {
         String query = "DELETE FROM doctors WHERE id = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+        try (Connection connection = dbConnection.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setInt(1, id);
             stmt.executeUpdate();
         } catch (SQLException e) {

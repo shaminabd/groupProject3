@@ -1,6 +1,7 @@
 package Repositories.Impl;
 
 import Config.DatabaseConnection;
+import Config.IDB;
 import Model.Bed;
 import Repositories.BedRepository;
 
@@ -12,20 +13,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BedRepositoryImpl implements BedRepository {
-    private Connection connection;
+    private IDB dbConnection;
 
     public BedRepositoryImpl() {
-        try {
-            this.connection = DatabaseConnection.getConnection();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        this.dbConnection = new DatabaseConnection();
     }
 
     @Override
     public void addBed(Bed bed) {
         String query = "INSERT INTO beds (occupied) VALUES (?)";
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+        try (Connection connection = dbConnection.getConnection();
+                PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setBoolean(1, bed.isOccupied());
             stmt.executeUpdate();
         } catch (SQLException e) {
@@ -36,7 +34,8 @@ public class BedRepositoryImpl implements BedRepository {
     @Override
     public Bed getBedById(int id) {
         String query = "SELECT * FROM beds WHERE id = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+        try (Connection connection = dbConnection.getConnection();
+                PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -52,7 +51,8 @@ public class BedRepositoryImpl implements BedRepository {
     public List<Bed> getAllBeds() {
         List<Bed> beds = new ArrayList<>();
         String query = "SELECT * FROM beds";
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+        try (Connection connection = dbConnection.getConnection();
+                PreparedStatement stmt = connection.prepareStatement(query)) {
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 beds.add(new Bed(rs.getInt("id"), rs.getBoolean("occupied")));

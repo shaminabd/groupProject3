@@ -13,9 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DoctorRepositoryImpl implements DoctorRepository {
-    private IDB dbConnection;
+    private final IDB dbConnection;
 
-    public DoctorRepositoryImpl() {
+    public DoctorRepositoryImpl(IDB dbConnection) {
         this.dbConnection = new DatabaseConnection();
     }
 

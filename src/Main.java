@@ -1,4 +1,6 @@
 import Config.DatabaseInitializer;
+import Config.IDB;
+import Config.PostgresDB;
 import Controllers.*;
 import Services.*;
 import Repositories.Impl.*;
@@ -20,15 +22,16 @@ public class Main {
         DatabaseInitializer.initializeDatabase();
         System.out.println("Hospital Management System Starting...");
 
+        IDB db = new PostgresDB("jdbc:postgresql://localhost:5432", "postgres", "user", "hospital_db");
 
-        UserRepositoryImpl userRepository = new UserRepositoryImpl();
-        DoctorRepositoryImpl doctorRepository = new DoctorRepositoryImpl();
-        PatientRepositoryImpl patientRepository = new PatientRepositoryImpl();
-        AppointmentRepositoryImpl appointmentRepository = new AppointmentRepositoryImpl();
-        ReportRepositoryImpl reportRepository = new ReportRepositoryImpl();
-        MedicineRepositoryImpl medicineRepository = new MedicineRepositoryImpl();
-        BedRepositoryImpl bedRepository = new BedRepositoryImpl();
-        HospitalRepositoryImpl hospitalRepository = new HospitalRepositoryImpl();
+        UserRepositoryImpl userRepository = new UserRepositoryImpl(db);
+        DoctorRepositoryImpl doctorRepository = new DoctorRepositoryImpl(db);
+        PatientRepositoryImpl patientRepository = new PatientRepositoryImpl(db);
+        AppointmentRepositoryImpl appointmentRepository = new AppointmentRepositoryImpl(db);
+        ReportRepositoryImpl reportRepository = new ReportRepositoryImpl(db);
+        MedicineRepositoryImpl medicineRepository = new MedicineRepositoryImpl(db);
+        BedRepositoryImpl bedRepository = new BedRepositoryImpl(db);
+        HospitalRepositoryImpl hospitalRepository = new HospitalRepositoryImpl(db);
 
 
         AuthService authService = new AuthService(userRepository);

@@ -8,9 +8,9 @@ import Repositories.UserRepository;
 import java.sql.*;
 
 public class UserRepositoryImpl implements UserRepository {
-    private IDB dbConnection;
+    private final IDB dbConnection;
 
-    public UserRepositoryImpl() {
+    public UserRepositoryImpl(IDB dbConnection) {
         this.dbConnection = new DatabaseConnection();
     }
 

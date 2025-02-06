@@ -13,9 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BedRepositoryImpl implements BedRepository {
-    private IDB dbConnection;
+    private final IDB dbConnection;
 
-    public BedRepositoryImpl() {
+    public BedRepositoryImpl(IDB dbConnection) {
         this.dbConnection = new DatabaseConnection();
     }
 

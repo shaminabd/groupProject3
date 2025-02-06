@@ -10,9 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class HospitalRepositoryImpl implements HospitalRepository {
-    private IDB dbConnection;
+    private final IDB dbConnection;
 
-    public HospitalRepositoryImpl() {
+    public HospitalRepositoryImpl(IDB dbConnection) {
         this.dbConnection = new DatabaseConnection();
     }
 

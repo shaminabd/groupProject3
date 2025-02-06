@@ -10,9 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ReportRepositoryImpl implements ReportRepository {
-    private IDB dbConnection;
+    private final IDB dbConnection;
 
-    public ReportRepositoryImpl() {
+    public ReportRepositoryImpl(IDB dbConnection) {
         this.dbConnection = new DatabaseConnection();
     }
 

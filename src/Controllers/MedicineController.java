@@ -15,16 +15,17 @@ public class MedicineController {
     public void addMedicine(Medicine medicine) {
         medicineService.addMedicine(medicine);
     }
+
     public void viewMedicines() {
-        List<Medicine> medicines = medicineService.getAllMedicines();
-        for (Medicine medicine : medicines) {
-            System.out.println("ID: " + medicine.getId() + ", Name: " + medicine.getName() + ", Dosage: " + medicine.getDosage());
-        }
+
     }
 
 
     public void removeMedicine(int medicineId) {
         medicineService.deleteMedicine(medicineId);
         System.out.println("Medicine with ID " + medicineId + " removed successfully.");
+    }
+
+    public void giveMedicineToPatient(int patientId, int medicineId) {
     }
 }

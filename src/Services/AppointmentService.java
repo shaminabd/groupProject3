@@ -13,7 +13,7 @@ public class AppointmentService {
     }
 
     public void bookAppointment(Appointment appointment) {
-        appointmentRepository.bookAppointment(appointment);
+        appointmentRepository.addAppointment(appointment);
     }
 
     public List<Appointment> getAllAppointments() {

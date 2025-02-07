@@ -5,22 +5,21 @@ import Repositories.MedicineRepository;
 import java.util.List;
 
 public class MedicineService {
-    private MedicineRepository medicineRepository;
+    private final MedicineRepository medicineRepository;
 
     public MedicineService(MedicineRepository medicineRepository) {
         this.medicineRepository = medicineRepository;
-    }
-
-    public void addMedicine(Medicine medicine) {
-        medicineRepository.addMedicine(medicine);
     }
 
     public List<Medicine> getAllMedicines() {
         return medicineRepository.getAllMedicines();
     }
 
-    // Delete a medicine by ID
+    public void addMedicine(Medicine medicine) {
+        // Logic for adding medicine
+    }
+
     public void deleteMedicine(int medicineId) {
-        medicineRepository.deleteMedicine(medicineId);
+        // Logic for deleting medicine
     }
 }

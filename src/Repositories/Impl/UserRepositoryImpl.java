@@ -47,15 +47,11 @@ public class UserRepositoryImpl implements UserRepository {
                     case "admin":
                         return new Admin(id, name, email, password, role);
                     case "doctor":
-                        String specialization = rs.getString("specialization");
+                        String specialization = getDoctorSpecialization(id, connection);
                         return new Doctor(id, name, email, password, specialization);
                     case "patient":
-                        String healthHistory = rs.getString("health_history");
+                        String healthHistory = getPatientHealthHistory(id, connection);
                         return new Patient(id, name, email, password, healthHistory);
-                    case "nurse":
-                        return new Nurse(id, name, email, password);
-                    case "pharmacist":
-                        return new Pharmacist(id, name, email, password);
                     default:
                         return new User(id, name, email, password, role);
                 }
@@ -66,6 +62,33 @@ public class UserRepositoryImpl implements UserRepository {
         return null;
     }
 
+    private String getPatientHealthHistory(int patientId, Connection connection) {
+        String query = "SELECT health_history FROM patients WHERE id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, patientId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getString("health_history");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return "No history"; // Default if no health history found
+    }
+
+    private String getDoctorSpecialization(int doctorId, Connection connection) {
+        String query = "SELECT specialization FROM doctors WHERE id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, doctorId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getString("specialization");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return "Unknown"; // Default if specialization not found
+    }
 
 
     @Override

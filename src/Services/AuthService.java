@@ -45,12 +45,6 @@ public class AuthService {
                     user = new Doctor(newUserId, doctor.getName(), doctor.getEmail(), doctor.getPassword(), doctor.getSpecialization());
                 }
                 break;
-            case "nurse":
-                user = new Nurse(newUserId, user.getName(), user.getEmail(), user.getPassword());
-                break;
-            case "pharmacist":
-                user = new Pharmacist(newUserId, user.getName(), user.getEmail(), user.getPassword());
-                break;
             case "patient":
                 if (user instanceof Patient) {
                     Patient patient = (Patient) user;

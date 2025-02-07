@@ -14,54 +14,50 @@ public class DatabaseInitializer {
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
              Statement statement = connection.createStatement()) {
 
-
+            // Users table
             statement.execute("CREATE TABLE IF NOT EXISTS users (" +
                     "id SERIAL PRIMARY KEY, " +
                     "name VARCHAR(100), " +
                     "email VARCHAR(100) UNIQUE, " +
                     "password VARCHAR(100), " +
-                    "role VARCHAR(50) CHECK (role IN ('admin', 'doctor', 'patient', 'nurse', 'pharmacist')));");
+                    "role VARCHAR(50) CHECK (role IN ('admin', 'doctor', 'patient')));");
 
-
+            // Doctors table with only 3 specializations
             statement.execute("CREATE TABLE IF NOT EXISTS doctors (" +
                     "id SERIAL PRIMARY KEY, " +
                     "user_id INT UNIQUE REFERENCES users(id) ON DELETE CASCADE, " +
-                    "specialization VARCHAR(100), " +
-                    "role VARCHAR(50) DEFAULT 'doctor');");
+                    "specialization VARCHAR(50) CHECK (specialization IN ('Surgeon', 'Psychologist', 'Therapist')));");
 
-
+            // Patients table
             statement.execute("CREATE TABLE IF NOT EXISTS patients (" +
                     "id SERIAL PRIMARY KEY, " +
                     "user_id INT UNIQUE REFERENCES users(id) ON DELETE CASCADE, " +
-                    "medical_history TEXT, " +
-                    "role VARCHAR(50) DEFAULT 'patient');");
+                    "health_history TEXT);");
 
-
-            statement.execute("CREATE TABLE IF NOT EXISTS appointments (" +
-                    "id SERIAL PRIMARY KEY, " +
-                    "doctor_id INT REFERENCES doctors(id), " +
-                    "patient_id INT REFERENCES patients(id), " +
-                    "appointment_date TIMESTAMP);");
-
-            statement.execute("CREATE TABLE IF NOT EXISTS reports (" +
-                    "id SERIAL PRIMARY KEY, " +
-                    "doctor_id INT REFERENCES doctors(id), " +
-                    "patient_id INT REFERENCES patients(id), " +
-                    "details TEXT);");
-
+            // Medicines table
             statement.execute("CREATE TABLE IF NOT EXISTS medicines (" +
                     "id SERIAL PRIMARY KEY, " +
-                    "name VARCHAR(100), " +
+                    "name VARCHAR(100) UNIQUE, " +
                     "dosage VARCHAR(50));");
 
+            // Beds table
             statement.execute("CREATE TABLE IF NOT EXISTS beds (" +
                     "id SERIAL PRIMARY KEY, " +
-                    "is_occupied BOOLEAN);");
+                    "is_occupied BOOLEAN DEFAULT FALSE);");
 
-            statement.execute("CREATE TABLE IF NOT EXISTS hospitals (" +
+            // Appointments table
+            statement.execute("CREATE TABLE IF NOT EXISTS appointments (" +
                     "id SERIAL PRIMARY KEY, " +
-                    "name VARCHAR(100), " +
-                    "location VARCHAR(200));");
+                    "doctor_id INT REFERENCES doctors(id) ON DELETE CASCADE, " +
+                    "patient_id INT REFERENCES patients(id) ON DELETE CASCADE, " +
+                    "appointment_date TIMESTAMP);");
+
+            // Reports table
+            statement.execute("CREATE TABLE IF NOT EXISTS reports (" +
+                    "id SERIAL PRIMARY KEY, " +
+                    "doctor_id INT REFERENCES doctors(id) ON DELETE CASCADE, " +
+                    "patient_id INT REFERENCES patients(id) ON DELETE CASCADE, " +
+                    "details TEXT);");
 
             System.out.println("Database initialized successfully.");
         } catch (SQLException e) {
@@ -70,62 +66,52 @@ public class DatabaseInitializer {
         }
     }
 
+    public static void addDefaultUsers() {
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+             Statement statement = connection.createStatement()) {
 
-    public static void addDefaultUsers(Statement statement) throws SQLException {
+            // Default Admin
+            statement.execute("INSERT INTO users (name, email, password, role) VALUES " +
+                    "('Admin User', 'admin@hospital.com', 'admin123', 'admin') " +
+                    "ON CONFLICT (email) DO NOTHING;");
 
-        statement.execute("INSERT INTO users (name, email, password, role) VALUES " +
-                "('Admin User', 'admin@hospital.com', 'admin123', 'Admin') " +
-                "ON CONFLICT (email) DO NOTHING;");
+            // Default Doctors with only the 3 allowed specializations
+            statement.execute("INSERT INTO users (name, email, password, role) VALUES " +
+                    "('Dr. Smith', 'surgeon@hospital.com', 'pass123', 'doctor') " +
+                    "ON CONFLICT (email) DO NOTHING;");
+            statement.execute("INSERT INTO doctors (user_id, specialization) " +
+                    "SELECT id, 'Surgeon' FROM users WHERE email = 'surgeon@hospital.com' " +
+                    "ON CONFLICT (user_id) DO NOTHING;");
 
+            statement.execute("INSERT INTO users (name, email, password, role) VALUES " +
+                    "('Dr. John', 'therapist@hospital.com', 'pass124', 'doctor') " +
+                    "ON CONFLICT (email) DO NOTHING;");
+            statement.execute("INSERT INTO doctors (user_id, specialization) " +
+                    "SELECT id, 'Therapist' FROM users WHERE email = 'therapist@hospital.com' " +
+                    "ON CONFLICT (user_id) DO NOTHING;");
 
-        statement.execute("INSERT INTO doctors (name, email, password, specialization) VALUES " +
-                "('Dr. Smith', 'doctor@hospital.com', 'pass123', 'Cardiology') " +
-                "ON CONFLICT (email) DO NOTHING;");
+            statement.execute("INSERT INTO users (name, email, password, role) VALUES " +
+                    "('Dr. Wilson', 'psychologist@hospital.com', 'pass125', 'doctor') " +
+                    "ON CONFLICT (email) DO NOTHING;");
+            statement.execute("INSERT INTO doctors (user_id, specialization) " +
+                    "SELECT id, 'Psychologist' FROM users WHERE email = 'psychologist@hospital.com' " +
+                    "ON CONFLICT (user_id) DO NOTHING;");
 
-        statement.execute("INSERT INTO doctors (name, email, password, specialization) VALUES " +
-                "('Dr. House', 'surgeon@hospital.com', 'pass124', 'Surgeon') " +
-                "ON CONFLICT (email) DO NOTHING;");
+            // Default Medicines
+            statement.execute("INSERT INTO medicines (name, dosage) VALUES " +
+                    "('Paracetamol', '500mg'), " +
+                    "('Ibuprofen', '200mg'), " +
+                    "('Amoxicillin', '250mg') " +
+                    "ON CONFLICT (name) DO NOTHING;");
 
-        statement.execute("INSERT INTO doctors (name, email, password, specialization) VALUES " +
-                "('Dr. Adams', 'neurologist@hospital.com', 'pass125', 'Neurology') " +
-                "ON CONFLICT (email) DO NOTHING;");
+            // Default Beds
+            statement.execute("INSERT INTO beds (is_occupied) VALUES (FALSE), (FALSE), (TRUE), (FALSE), (TRUE) " +
+                    "ON CONFLICT (id) DO NOTHING;");
 
-        statement.execute("INSERT INTO doctors (name, email, password, specialization) VALUES " +
-                "('Dr. Wilson', 'oncologist@hospital.com', 'pass126', 'Oncology') " +
-                "ON CONFLICT (email) DO NOTHING;");
-
-        statement.execute("INSERT INTO doctors (name, email, password, specialization) VALUES " +
-                "('Dr. Elizabeth', 'psychiatrist@hospital.com', 'pass127', 'Psychiatrist') " +
-                "ON CONFLICT (email) DO NOTHING;");
-
-        statement.execute("INSERT INTO doctors (name, email, password, specialization) VALUES " +
-                "('Dr. Emma', 'radiologist@hospital.com', 'pass128', 'Radiologist') " +
-                "ON CONFLICT (email) DO NOTHING;");
-
-        statement.execute("INSERT INTO doctors (name, email, password, specialization) VALUES " +
-                "('Dr. Ali', 'hematology@hospital.com', 'pass129', 'Hematology') " +
-                "ON CONFLICT (email) DO NOTHING;");
-
-        statement.execute("INSERT INTO doctors (name, email, password, specialization) VALUES " +
-                "('Dr. Sanat', 'pulmonologist@hospital.com', 'pass130', 'Pulmonology') " +
-                "ON CONFLICT (email) DO NOTHING;");
-
-        statement.execute("INSERT INTO doctors (name, email, password, specialization) VALUES " +
-                "('Dr. Zukhra', 'dermatologist@hospital.com', 'pass131', 'Dermatology') " +
-                "ON CONFLICT (email) DO NOTHING;");
-
-        statement.execute("INSERT INTO doctors (name, email, password, specialization) VALUES " +
-                "('Dr. Khaimuldin', 'endocrinologist@hospital.com', 'pass132', 'Endocrinology') " +
-                "ON CONFLICT (email) DO NOTHING;");
-
-        statement.execute("INSERT INTO doctors (name, email, password, specialization) VALUES " +
-                "('Dr. John', 'rheumatologist@hospital.com', 'pass133', 'Rheumatology') " +
-                "ON CONFLICT (email) DO NOTHING;");
-
-        statement.execute("INSERT INTO doctors (name, email, password, specialization) VALUES " +
-                "('Dr. Jessica', 'laboratory@hospital.com', 'pass134', 'Laboratory Medicine') " +
-                "ON CONFLICT (email) DO NOTHING;");
-
-
+            System.out.println("Default users, medicines, and beds added successfully.");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("Error adding default users, medicines, and beds.");
+        }
     }
 }

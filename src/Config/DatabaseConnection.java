@@ -7,7 +7,7 @@ public class DatabaseConnection implements IDB{
 
     private static final String URL = "jdbc:postgresql://localhost:5432/hospital_db";
     private static final String USER = "postgres";
-    private static final String PASSWORD = "user";
+    private static final String PASSWORD = "Sanat2007";
 
     private  Connection connection;
 

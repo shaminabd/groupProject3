@@ -14,9 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AppointmentRepositoryImpl implements AppointmentRepository {
-    private IDB dbConnection;
+    private final IDB dbConnection;
 
-    public AppointmentRepositoryImpl() {
+    public AppointmentRepositoryImpl(IDB dbConnection) {
         this.dbConnection = new DatabaseConnection();
     }
 

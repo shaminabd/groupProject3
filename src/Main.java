@@ -1,9 +1,10 @@
 import Config.DatabaseInitializer;
+import Config.IDB;
+import Config.PostgresDB;
 import Controllers.*;
 import Services.*;
 import Repositories.Impl.*;
 import Model.*;
-
 import java.util.Scanner;
 
 public class Main {
@@ -11,24 +12,27 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Initializing Database...");
 
+
         try {
             Class.forName("org.postgresql.Driver");
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
 
+
         DatabaseInitializer.initializeDatabase();
         System.out.println("Hospital Management System Starting...");
 
+        IDB db = new PostgresDB("jdbc:postgresql://localhost:5432", "postgres", "user", "hospital_db");
 
-        UserRepositoryImpl userRepository = new UserRepositoryImpl();
-        DoctorRepositoryImpl doctorRepository = new DoctorRepositoryImpl();
-        PatientRepositoryImpl patientRepository = new PatientRepositoryImpl();
-        AppointmentRepositoryImpl appointmentRepository = new AppointmentRepositoryImpl();
-        ReportRepositoryImpl reportRepository = new ReportRepositoryImpl();
-        MedicineRepositoryImpl medicineRepository = new MedicineRepositoryImpl();
-        BedRepositoryImpl bedRepository = new BedRepositoryImpl();
-        HospitalRepositoryImpl hospitalRepository = new HospitalRepositoryImpl();
+        UserRepositoryImpl userRepository = new UserRepositoryImpl(db);
+        DoctorRepositoryImpl doctorRepository = new DoctorRepositoryImpl(db);
+        PatientRepositoryImpl patientRepository = new PatientRepositoryImpl(db);
+        AppointmentRepositoryImpl appointmentRepository = new AppointmentRepositoryImpl(db);
+        ReportRepositoryImpl reportRepository = new ReportRepositoryImpl(db);
+        MedicineRepositoryImpl medicineRepository = new MedicineRepositoryImpl(db);
+        BedRepositoryImpl bedRepository = new BedRepositoryImpl(db);
+        HospitalRepositoryImpl hospitalRepository = new HospitalRepositoryImpl(db);
 
 
         AuthService authService = new AuthService(userRepository);
@@ -55,11 +59,13 @@ public class Main {
 
         if (admin == null) {
             System.out.println("Admin not found. Registering admin...");
+
+
             System.out.print("Enter Admin Email: ");
             String adminEmail = scanner.nextLine();
             System.out.print("Enter Admin Password: ");
             String adminPassword = scanner.nextLine();
-            admin = new Admin(1, "Admin", adminEmail, adminPassword, "admin");
+            admin = new Admin(1, "Admin", adminEmail, adminPassword);
             userRepository.addUser(admin);
             System.out.println("Admin registered successfully.");
         } else {
@@ -67,234 +73,188 @@ public class Main {
         }
 
 
-        while (true) {
-            System.out.println("Do you want to register, login, or quit? (register/login/quit): ");
-            String action = scanner.nextLine();
+        System.out.println("Do you want to register or login? (register/login): ");
+        String action = scanner.nextLine();
 
-            if (action.equalsIgnoreCase("quit")) {
-                System.out.println("Exiting the system...");
-                break;
+        if (action.equalsIgnoreCase("register")) {
+            System.out.println("Enter your role (Admin, Doctor, Nurse, Patient, Pharmacist): ");
+            String role = scanner.nextLine();
+            System.out.print("Enter Email: ");
+            String email = scanner.nextLine();
+            System.out.print("Enter Password: ");
+            String password = scanner.nextLine();
+            System.out.print("Enter Name: ");
+            String name = scanner.nextLine();
+
+
+            if (role.equalsIgnoreCase("Doctor")) {
+                System.out.print("Enter Doctor Specialization: ");
+                String specialization = scanner.nextLine();
+                User user = new Doctor(1, name, email, password, specialization);
+                boolean isRegistered = authController.signUp(user, role);
+                if (isRegistered) {
+                    System.out.println("Doctor registered successfully.");
+                } else {
+                    System.out.println("Doctor already exists.");
+                }
+            } else if (role.equalsIgnoreCase("Patient")) {
+                System.out.print("Enter Patient Health History: ");
+                String healthHistory = scanner.nextLine();
+                User user = new Patient(1, name, email, password, healthHistory);
+                boolean isRegistered = authController.signUp(user, role);
+                if (isRegistered) {
+                    System.out.println("Patient registered successfully.");
+                } else {
+                    System.out.println("Patient already exists.");
+                }
+            } else if (role.equalsIgnoreCase("Nurse")) {
+
+                User user = new Nurse(1, name, email, password);
+                boolean isRegistered = authController.signUp(user, role);
+                if (isRegistered) {
+                    System.out.println("Nurse registered successfully.");
+                } else {
+                    System.out.println("Nurse already exists.");
+                }
+            } else if (role.equalsIgnoreCase("Pharmacist")) {
+                User user = new Pharmacist(1, name, email, password);
+                boolean isRegistered = authController.signUp(user, role);
+                if (isRegistered) {
+                    System.out.println("Pharmacist registered successfully.");
+                } else {
+                    System.out.println("Pharmacist already exists.");
+                }
+            } else {
+                System.out.println("Invalid role selected. Please choose a valid role.");
             }
+        } else if (action.equalsIgnoreCase("login")) {
 
-            if (action.equalsIgnoreCase("register")) {
-                System.out.println("Enter your role (Admin, Doctor, Nurse, Patient, Pharmacist): ");
-                String role = scanner.nextLine();
+            User loggedInUser = null;
+
+            while (loggedInUser == null) {
+                System.out.println("\nLogin to Hospital Management System:");
                 System.out.print("Enter Email: ");
                 String email = scanner.nextLine();
                 System.out.print("Enter Password: ");
                 String password = scanner.nextLine();
-                System.out.print("Enter Name: ");
-                String name = scanner.nextLine();
-
-                User user = null;
-
-                if (role.equalsIgnoreCase("Doctor")) {
-                    System.out.print("Enter Doctor Specialization: ");
-                    String specialization = scanner.nextLine();
-                    user = new Doctor(1, name, email, password, specialization);
-                } else if (role.equalsIgnoreCase("Patient")) {
-                    System.out.print("Enter Patient Health History: ");
-                    String healthHistory = scanner.nextLine();
-                    user = new Patient(1, name, email, password, healthHistory);
-                } else if (role.equalsIgnoreCase("Nurse")) {
-                    user = new Nurse(1, name, email, password);
-                } else if (role.equalsIgnoreCase("Pharmacist")) {
-                    user = new Pharmacist(1, name, email, password);
-                } else {
-                    System.out.println("Invalid role. Registration failed.");
-                    continue;
+                loggedInUser = authController.login(email, password) ? userRepository.getUserByEmail(email) : null;
+                if (loggedInUser == null) {
+                    System.out.println("Invalid credentials. Try again.");
                 }
-
-                if (userRepository.getUserByEmail(email) != null) {
-                    System.out.println(role + " already exists.");
-                } else {
-                    boolean isRegistered = authController.signUp(user, role);
-                    if (isRegistered) {
-                        System.out.println(role + " registered successfully.");
-                    } else {
-                        System.out.println("An error occurred during registration.");
-                    }
-                }
-
             }
-             else if (action.equalsIgnoreCase("login")) {
-                // Login process
-                User loggedInUser = null;
+            System.out.println("Welcome, " + loggedInUser.getName() + "! You are logged in as " + loggedInUser.getClass().getSimpleName());
 
-                while (loggedInUser == null) {
-                    System.out.println("\nLogin to Hospital Management System:");
-                    System.out.print("Enter Email: ");
-                    String email = scanner.nextLine();
-                    System.out.print("Enter Password: ");
-                    String password = scanner.nextLine();
-                    loggedInUser = authController.login(email, password);
-                    if (loggedInUser == null) {
-                        System.out.println("Invalid credentials. Try again.");
-                    }
-                }
+
+            while (true) {
+                System.out.println("\nHospital Management System Menu:");
 
                 if (loggedInUser instanceof Admin) {
-                    System.out.println("Welcome, Admin! You are logged in as Admin.");
-                } else if (loggedInUser instanceof Doctor) {
-                    System.out.println("Welcome, Doctor! You are logged in as Doctor.");
-                } else if (loggedInUser instanceof Patient) {
-                    System.out.println("Welcome, Patient! You are logged in as Patient.");
-                } else if (loggedInUser instanceof Nurse) {
-                    System.out.println("Welcome, Nurse! You are logged in as Nurse.");
-                } else if (loggedInUser instanceof Pharmacist) {
-                    System.out.println("Welcome, Pharmacist! You are logged in as Pharmacist.");
+                    System.out.println("1. Register Doctor (Admin Only)");
+                    System.out.println("7. Add Hospital (Admin Only)");
                 }
+                System.out.println("2. Register Patient");
+                System.out.println("3. Book Appointment");
+                if (loggedInUser instanceof Doctor) {
+                    System.out.println("4. Create Custom Report (Doctors Only)");
+                }
+                if (loggedInUser instanceof Pharmacist) {
+                    System.out.println("5. Add Custom Medicine (Pharmacists Only)");
+                }
+                if (loggedInUser instanceof Nurse) {
+                    System.out.println("6. Allocate Custom Bed (Nurses Only)");
+                }
+                System.out.println("8. View Bill & Make Payment");
+                System.out.println("9. Exit");
+                System.out.print("Enter your choice: ");
+                int choice = scanner.nextInt();
+                scanner.nextLine();
 
-                while (true) {
-                    System.out.println("\nHospital Management System Menu:");
-                    if (loggedInUser instanceof Admin) {
-                        System.out.println("1. View Doctors");
-                        System.out.println("2. Remove Doctor");
-                        System.out.println("3. View Patients");
-                        System.out.println("4. Remove Patient");
-                        System.out.println("5. View Appointments");
-                        System.out.println("6. Remove Appointment");
-                        System.out.println("7. View Medicines");
-                        System.out.println("8. Remove Medicine");
-                        System.out.println("9. Generate Report (Receipt)");
-                        System.out.println("10. Add Hospital");
-                        System.out.println("11. Log Out");
-                    } else if (loggedInUser instanceof Doctor) {
-                        System.out.println("1. View Appointments");
-                        System.out.println("2. Create Report");
-                        System.out.println("3. Log Out");
-                    } else if (loggedInUser instanceof Nurse) {
-                        System.out.println("1. Allocate Bed");
-                        System.out.println("2. Log Out");
-                    } else if (loggedInUser instanceof Pharmacist) {
-                        System.out.println("1. Add Medicine");
-                        System.out.println("2. Log Out");
-                    } else if (loggedInUser instanceof Patient) {
-                        System.out.println("1. Book Appointment");
-                        System.out.println("2. View Appointment");
-                        System.out.println("3. Log Out");
-                    }
-                    System.out.println("12. Exit System");
-
-                    System.out.print("Enter your choice: ");
-                    int choice = scanner.nextInt();
-                    scanner.nextLine();
-
-                    switch (choice) {
-                        case 1:
-                            if (loggedInUser instanceof Admin) {
-                                doctorController.viewDoctors();
-                            } else if (loggedInUser instanceof Doctor) {
-                                appointmentController.viewAppointments();
-                            } else {
-                                System.out.println("Access Denied.");
-                            }
-                            break;
-                        case 2:
-                            if (loggedInUser instanceof Admin) {
-                                System.out.print("Enter Doctor ID to remove: ");
-                                int doctorId = scanner.nextInt();
-                                scanner.nextLine();
-                                doctorController.removeDoctor(doctorId);
-                            } else if (loggedInUser instanceof Doctor) {
-                                System.out.print("Enter Report Details: ");
-                                String reportDetails = scanner.nextLine();
-                                reportController.createReport(new Report(1, 1, 1, reportDetails));
-                            } else {
-                                System.out.println("Access Denied.");
-                            }
-                            break;
-                        case 3:
-                            if (loggedInUser instanceof Admin) {
-                                patientController.viewPatients();
-                            } else if (loggedInUser instanceof Patient) {
-                                appointmentController.viewAppointments();
-                            } else {
-                                System.out.println("Access Denied.");
-                            }
-                            break;
-                        case 4:
-                            if (loggedInUser instanceof Admin) {
-                                System.out.print("Enter Patient ID to remove: ");
-                                int patientId = scanner.nextInt();
-                                scanner.nextLine();
-                                patientController.removePatient(patientId);
-                            } else {
-                                System.out.println("Access Denied.");
-                            }
-                            break;
-                        case 5:
-                            if (loggedInUser instanceof Admin) {
-                                appointmentController.viewAppointments();
-                            } else {
-                                System.out.println("Access Denied.");
-                            }
-                            break;
-                        case 6:
-                            if (loggedInUser instanceof Admin) {
-                                System.out.print("Enter Appointment ID to remove: ");
-                                int appointmentId = scanner.nextInt();
-                                scanner.nextLine();
-                                appointmentController.removeAppointment(appointmentId);
-                            } else {
-                                System.out.println("Access Denied.");
-                            }
-                            break;
-                        case 7:
-                            if (loggedInUser instanceof Admin) {
-                                medicineController.viewMedicines();
-                            } else {
-                                System.out.println("Access Denied.");
-                            }
-                            break;
-                        case 8:
-                            if (loggedInUser instanceof Admin) {
-                                System.out.print("Enter Medicine ID to remove: ");
-                                int medicineId = scanner.nextInt();
-                                scanner.nextLine();
-                                medicineController.removeMedicine(medicineId);
-                            } else {
-                                System.out.println("Access Denied.");
-                            }
-                            break;
-                        case 9:
-                            if (loggedInUser instanceof Admin) {
-                                System.out.println("Generating a custom report (receipt)... ");
-                                System.out.print("Enter Report Details: ");
-                                String reportDetails = scanner.nextLine();
-                                reportController.createReport(new Report(1, 1, 1, reportDetails));
-                            } else {
-                                System.out.println("Access Denied.");
-                            }
-                            break;
-                        case 10:
-                            if (loggedInUser instanceof Admin) {
-                                System.out.println("Adding a custom hospital...");
-                                System.out.print("Enter Hospital Name: ");
-                                String hospitalName = scanner.nextLine();
-                                System.out.print("Enter Hospital Location: ");
-                                String location = scanner.nextLine();
-                                hospitalController.addHospital(new Hospital(1, hospitalName, location));
-                                System.out.println("Custom Hospital Added Successfully.");
-                            } else {
-                                System.out.println("Access Denied.");
-                            }
-                            break;
-                        case 11:
-                            System.out.println("Logging out...");
-                            loggedInUser = null;
-                            break;
-                        case 12:
-                            System.out.println("Exiting the system...");
-                            scanner.close();
-                            return;
-                        default:
-                            System.out.println("Invalid choice, please try again.");
-                    }
-
-                    if (loggedInUser == null) {
+                switch (choice) {
+                    case 1:
+                        if (loggedInUser instanceof Admin) {
+                            System.out.print("Enter Doctor Name: ");
+                            String doctorName = scanner.nextLine();
+                            System.out.print("Enter Doctor Specialization: ");
+                            String specialization = scanner.nextLine();
+                            doctorController.registerDoctor(new Doctor(1, doctorName, "email@hospital.com", "pass123", specialization));
+                            System.out.println("Doctor Registered Successfully.");
+                        } else {
+                            System.out.println("Access Denied: Only Admins can register doctors.");
+                        }
                         break;
-                    }
+                    case 2:
+                        System.out.print("Enter Patient Name: ");
+                        String patientName = scanner.nextLine();
+                        patientController.registerPatient(new Patient(1, patientName, "patient@hospital.com", "pass123", "None"));
+                        System.out.println("Patient Registered Successfully.");
+                        break;
+                    case 3:
+                        System.out.println("Booking a custom appointment...");
+                        System.out.print("Enter Appointment Date (YYYY-MM-DD): ");
+                        String date = scanner.nextLine();
+                        appointmentController.bookAppointment(new Appointment(1, 1, 1, date));
+                        System.out.println("Custom Appointment Booked Successfully.");
+                        break;
+                    case 4:
+                        if (loggedInUser instanceof Doctor) {
+                            System.out.println("Creating a custom report...");
+                            System.out.print("Enter Report Details: ");
+                            String reportDetails = scanner.nextLine();
+                            reportController.createReport(new Report(1, 1, 1, reportDetails));
+                            System.out.println("Custom Report Created Successfully.");
+                        } else {
+                            System.out.println("Access Denied: Only Doctors can create reports.");
+                        }
+                        break;
+                    case 5:
+                        if (loggedInUser instanceof Pharmacist) {
+                            System.out.println("Adding a custom medicine...");
+                            System.out.print("Enter Medicine Name: ");
+                            String medicineName = scanner.nextLine();
+                            System.out.print("Enter Medicine Dosage: ");
+                            String dosage = scanner.nextLine();
+                            medicineController.addMedicine(new Medicine(1, medicineName, dosage));
+                            System.out.println("Custom Medicine Added Successfully.");
+                        } else {
+                            System.out.println("Access Denied: Only Pharmacists can add medicines.");
+                        }
+                        break;
+                    case 6:
+                        if (loggedInUser instanceof Nurse) {
+                            System.out.println("Allocating a custom bed...");
+                            System.out.print("Enter Bed ID: ");
+                            int bedId = scanner.nextInt();
+                            System.out.print("Is Bed Occupied (true/false): ");
+                            boolean isOccupied = scanner.nextBoolean();
+                            bedController.addBed(new Bed(bedId, isOccupied));
+                            System.out.println("Custom Bed Allocated Successfully.");
+                        } else {
+                            System.out.println("Access Denied: Only Nurses can allocate beds.");
+                        }
+                        break;
+                    case 7:
+                        if (loggedInUser instanceof Admin) {
+                            System.out.println("Adding a custom hospital...");
+                            System.out.print("Enter Hospital Name: ");
+                            String hospitalName = scanner.nextLine();
+                            System.out.print("Enter Hospital Location: ");
+                            String location = scanner.nextLine();
+                            hospitalController.addHospital(new Hospital(1, hospitalName, location));
+                            System.out.println("Custom Hospital Added Successfully.");
+                        } else {
+                            System.out.println("Access Denied: Only Admins can add hospitals.");
+                        }
+                        break;
+                    case 8:
+                        System.out.println("Viewing bill and processing payment...");
+                        System.out.println("Feature under development.");
+                        break;
+                    case 9:
+                        System.out.println("Exiting the system...");
+                        scanner.close();
+                        return;
+                    default:
+                        System.out.println("Invalid choice, please try again.");
                 }
             }
         }

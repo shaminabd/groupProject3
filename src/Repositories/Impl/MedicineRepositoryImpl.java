@@ -15,9 +15,9 @@ import java.util.List;
 public class MedicineRepositoryImpl implements MedicineRepository {
     private List<Medicine> medicines = new ArrayList<>();
 
-    private IDB dbConnection;
+    private final IDB dbConnection;
 
-    public MedicineRepositoryImpl() {
+    public MedicineRepositoryImpl(IDB dbConnection) {
         this.dbConnection = new DatabaseConnection();
     }
 

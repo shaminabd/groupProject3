@@ -9,4 +9,7 @@ public interface DoctorRepository {
     List<Doctor> getAllDoctors();
     void updateDoctor(Doctor doctor);
     void deleteDoctor(int id);
+    Doctor getDoctorByName(String name);
+    void deleteAllDoctors();
+
 }

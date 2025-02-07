@@ -3,6 +3,7 @@ package Controllers;
 import Model.Appointment;
 import Services.AppointmentService;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public class AppointmentController {
@@ -12,8 +13,10 @@ public class AppointmentController {
         this.appointmentService = appointmentService;
     }
 
-    public void bookAppointment(Appointment appointment) {
+    public void bookAppointment(int doctorId, int patientId, LocalDate date) {
+        Appointment appointment = new Appointment(0, doctorId, patientId, date);
         appointmentService.bookAppointment(appointment);
+        System.out.println("Appointment booked with Doctor ID: " + doctorId + " for Patient ID: " + patientId + " and Date: " + date);
     }
 
     public void viewAppointments() {

@@ -94,4 +94,14 @@ public class DoctorRepositoryImpl implements DoctorRepository {
             e.printStackTrace();
         }
     }
+
+    @Override
+    public Doctor getDoctorByName(String name) {
+        return null;
+    }
+
+    @Override
+    public void deleteAllDoctors() {
+
+    }
 }

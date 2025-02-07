@@ -1,3 +1,4 @@
+import Config.DatabaseInitializer;
 import Config.IDB;
 import Config.PostgresDB;
 import Controllers.*;
@@ -17,6 +18,8 @@ public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Initializing Database...");
+        DatabaseInitializer.initializeDatabase();  // Ensure the database is set up correctly
+        DatabaseInitializer.addDefaultUsers();
 
         try {
             Class.forName("org.postgresql.Driver");
@@ -56,12 +59,6 @@ public class Main {
         AdminMenu adminMenu = new AdminMenu(scanner, doctorController, patientController, appointmentController,
                 medicineController, reportController, hospitalController);
 
-        DoctorMenu doctorMenu = new DoctorMenu(scanner, appointmentController, reportController, medicineController,
-                bedController, new Doctor());
-
-
-        PatientMenu patientMenu = new PatientMenu(scanner, appointmentController, reportController);
-
         while (true) {
             System.out.println("What do you want to do?");
             System.out.println("1. Login");
@@ -88,7 +85,7 @@ public class Main {
                 User user = null;
 
                 if (role.equalsIgnoreCase("Doctor")) {
-                    System.out.print("Enter Doctor Specialization: ");
+                    System.out.print("Enter Doctor Specialization(Surgeon, Therapist, Psychologist): ");
                     String specialization = scanner.nextLine();
                     user = new Doctor(1, name, email, password, specialization);
                 } else if (role.equalsIgnoreCase("Patient")) {
@@ -132,6 +129,8 @@ public class Main {
                         }
                     } else if (loggedInUser instanceof Doctor) {
                         Doctor loggedInDoctor = (Doctor) loggedInUser;
+                        DoctorMenu doctorMenu = new DoctorMenu(scanner, appointmentController, reportController, medicineController,
+                                bedController, loggedInDoctor);
                         while (true) {
                             doctorMenu.displayMenu();
                             System.out.print("Enter your choice: ");
@@ -141,6 +140,9 @@ public class Main {
                             if (choice == 8) break;
                         }
                     } else if (loggedInUser instanceof Patient) {
+                        Patient loggedInPatient = (Patient) loggedInUser;
+                        PatientMenu patientMenu = new PatientMenu(scanner, appointmentController, reportController,
+                                loggedInPatient, patientRepository, doctorRepository);
                         while (true) {
                             patientMenu.displayMenu();
                             System.out.print("Enter your choice: ");

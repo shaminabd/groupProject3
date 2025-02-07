@@ -23,19 +23,17 @@ public class PatientRepositoryImpl implements PatientRepository {
 
     @Override
     public void addPatient(Patient patient) {
-        String query = "INSERT INTO patients (name, email, password, role, medical_history) VALUES (?, ?, ?, ?, ?)";
+        String query = "INSERT INTO patients (user_id, health_history) VALUES (?, ?)";
         try (Connection connection = dbConnection.getConnection();
-                PreparedStatement stmt = connection.prepareStatement(query)) {
-            stmt.setString(1, patient.getName());
-            stmt.setString(2, patient.getEmail());
-            stmt.setString(3, patient.getPassword());
-            stmt.setString(4, "patient");
-            stmt.setString(5, patient.getMedicalHistory());
+             PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, patient.getId());
+            stmt.setString(2, patient.getMedicalHistory());
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
+
 
     @Override
     public Patient getPatientById(int id) {
@@ -69,7 +67,6 @@ public class PatientRepositoryImpl implements PatientRepository {
         return patients;
     }
 
-    // Remove patient by ID
     @Override
     public void deletePatient(int patientId) {
         String query = "DELETE FROM patients WHERE id = ?";
@@ -80,5 +77,9 @@ public class PatientRepositoryImpl implements PatientRepository {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public int getNextUserId() {
+        return 0;
     }
 }

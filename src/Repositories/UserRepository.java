@@ -9,4 +9,6 @@ public interface UserRepository {
     int getNextUserId();
 
     void addPatient(int newUserId, String healthHistory);
+
+    void addDoctor(int newUserId, String specialization);
 }

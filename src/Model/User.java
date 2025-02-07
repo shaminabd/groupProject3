@@ -16,7 +16,6 @@ public class User {
         this.role = role;
     }
 
-    // Add this getter method
     public String getName() {
         return name;
     }

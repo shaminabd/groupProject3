@@ -40,14 +40,14 @@ public class Registration {
             System.out.print("Enter Doctor Specialization: ");
             String specialization = scanner.nextLine();
             user = new Doctor(1, name, email, password, specialization);
-            // Add user to the doctors table
-            doctorRepository.addDoctor((Doctor) user);  // assuming addDoctor() adds to doctors table
+
+            doctorRepository.addDoctor((Doctor) user);
         } else if (role.equalsIgnoreCase("Patient")) {
             System.out.print("Enter Patient Health History: ");
             String healthHistory = scanner.nextLine();
             user = new Patient(1, name, email, password, healthHistory);
-            // Add user to the patients table
-            patientRepository.addPatient((Patient) user);  // assuming addPatient() adds to patients table
+
+            patientRepository.addPatient((Patient) user);
         } else {
             System.out.println("Invalid role. Registration failed.");
             return;

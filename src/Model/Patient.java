@@ -8,9 +8,7 @@ public class Patient extends User {
         this.medicalHistory = medicalHistory;
     }
 
-    public String getMedicalHistory() { return medicalHistory; }
-
-    public String getHealthHistory() {
+    public String getMedicalHistory() {
         return medicalHistory;
     }
 }

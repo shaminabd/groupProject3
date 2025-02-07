@@ -73,7 +73,7 @@ public class UserRepositoryImpl implements UserRepository {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return "No history"; // Default if no health history found
+        return "No history";
     }
 
     private String getDoctorSpecialization(int doctorId, Connection connection) {
@@ -87,13 +87,25 @@ public class UserRepositoryImpl implements UserRepository {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return "Unknown"; // Default if specialization not found
+        return "Unknown";
     }
 
 
     @Override
     public int getNextUserId() {
         return 0;
+    }
+
+    public void addDoctor(int userId, String specialization) {
+        String query = "INSERT INTO doctors (user_id, specialization) VALUES (?, ?)";
+        try (Connection connection = dbConnection.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, userId);
+            stmt.setString(2, specialization);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public void addPatient(int userId, String healthHistory) {

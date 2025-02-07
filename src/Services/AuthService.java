@@ -1,10 +1,12 @@
 package Services;
 
 import Model.*;
+import Repositories.PatientRepository;
 import Repositories.UserRepository;
 
 public class AuthService {
     private UserRepository userRepository;
+    private PatientRepository patientRepository;
 
     public AuthService(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -43,21 +45,22 @@ public class AuthService {
                 if (user instanceof Doctor) {
                     Doctor doctor = (Doctor) user;
                     user = new Doctor(newUserId, doctor.getName(), doctor.getEmail(), doctor.getPassword(), doctor.getSpecialization());
+                    userRepository.addUser(user);
+                    userRepository.addDoctor(newUserId, doctor.getSpecialization());
                 }
                 break;
             case "patient":
                 if (user instanceof Patient) {
                     Patient patient = (Patient) user;
-                    user = new Patient(newUserId, patient.getName(), patient.getEmail(), patient.getPassword(), patient.getHealthHistory());
-                    userRepository.addPatient(newUserId, patient.getHealthHistory());  // ✅ Add to patients table
+                    user = new Patient(newUserId, patient.getName(), patient.getEmail(), patient.getPassword(), patient.getMedicalHistory());
+                    userRepository.addUser(user);
+                    patientRepository.addPatient(patient);
                 }
                 break;
             default:
                 System.out.println("Invalid role. Registration failed.");
                 return false;
         }
-
-        userRepository.addUser(user);
         return true;
     }
 

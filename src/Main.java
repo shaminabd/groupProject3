@@ -1,3 +1,4 @@
+import Authentication.Registration;
 import Config.DatabaseInitializer;
 import Config.IDB;
 import Config.PostgresDB;
@@ -59,6 +60,9 @@ public class Main {
         AdminMenu adminMenu = new AdminMenu(scanner, doctorController, patientController, appointmentController,
                 medicineController, reportController, hospitalController);
 
+
+        Registration registration =new Registration(authController, userRepository, doctorRepository, patientRepository, scanner);
+
         while (true) {
             System.out.println("What do you want to do?");
             System.out.println("1. Login");
@@ -88,10 +92,12 @@ public class Main {
                     System.out.print("Enter Doctor Specialization(Surgeon, Therapist, Psychologist): ");
                     String specialization = scanner.nextLine();
                     user = new Doctor(1, name, email, password, specialization);
+                    doctorRepository.addDoctor((Doctor) user);
                 } else if (role.equalsIgnoreCase("Patient")) {
-                    System.out.print("Enter Patient Health History: ");
+                    System.out.print("Enter Patient Health History(good/bad/etc.): ");
                     String healthHistory = scanner.nextLine();
                     user = new Patient(1, name, email, password, healthHistory);
+                    patientRepository.addPatient((Patient) user);
                 } else if (role.equalsIgnoreCase("Admin")) {
                     user = new User(1, name, email, password, "admin");
                 } else {

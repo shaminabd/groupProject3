@@ -96,4 +96,16 @@ public class UserRepositoryImpl implements UserRepository {
         return 0;
     }
 
+    public void addPatient(int userId, String healthHistory) {
+        String query = "INSERT INTO patients (user_id, health_history) VALUES (?, ?)";
+        try (Connection connection = dbConnection.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, userId);
+            stmt.setString(2, healthHistory);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

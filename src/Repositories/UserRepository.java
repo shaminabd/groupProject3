@@ -7,4 +7,6 @@ public interface UserRepository {
     User getUserByEmail(String email);
 
     int getNextUserId();
+
+    void addPatient(int newUserId, String healthHistory);
 }

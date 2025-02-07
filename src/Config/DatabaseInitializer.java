@@ -6,9 +6,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class DatabaseInitializer {
-    private static final String URL = "jdbc:postgresql://localhost:4242/hospital_db";
+    private static final String URL = "jdbc:postgresql://localhost:5432/hospital_db";
     private static final String USER = "postgres";
-    private static final String PASSWORD = "12344321";
+    private static final String PASSWORD = "user";
 
     public static void initializeDatabase() {
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
@@ -22,11 +22,11 @@ public class DatabaseInitializer {
                     "password VARCHAR(100), " +
                     "role VARCHAR(50) CHECK (role IN ('admin', 'doctor', 'patient')));");
 
-            // Doctors table with all specializations
+            // Doctors table with only 3 specializations
             statement.execute("CREATE TABLE IF NOT EXISTS doctors (" +
                     "id SERIAL PRIMARY KEY, " +
                     "user_id INT UNIQUE REFERENCES users(id) ON DELETE CASCADE, " +
-                    "specialization VARCHAR(50));");
+                    "specialization VARCHAR(50) CHECK (specialization IN ('Surgeon', 'Psychologist', 'Therapist')));");
 
             // Patients table
             statement.execute("CREATE TABLE IF NOT EXISTS patients (" +
@@ -75,68 +75,26 @@ public class DatabaseInitializer {
                     "('Admin User', 'admin@hospital.com', 'admin123', 'admin') " +
                     "ON CONFLICT (email) DO NOTHING;");
 
-            // Default Doctors with Specializations
+            // Default Doctors with only the 3 allowed specializations
             statement.execute("INSERT INTO users (name, email, password, role) VALUES " +
-                    "('Dr. Smith', 'doctor@hospital.com', 'pass123', 'doctor') " +
-                    "ON CONFLICT (email) DO NOTHING;");
-            statement.execute("INSERT INTO doctors (user_id, specialization) " +
-                    "SELECT id, 'Cardiology' FROM users WHERE email = 'doctor@hospital.com' " +
-                    "ON CONFLICT (user_id) DO NOTHING;");
-
-            statement.execute("INSERT INTO users (name, email, password, role) VALUES " +
-                    "('Dr. House', 'surgeon@hospital.com', 'pass124', 'doctor') " +
+                    "('Dr. Smith', 'surgeon@hospital.com', 'pass123', 'doctor') " +
                     "ON CONFLICT (email) DO NOTHING;");
             statement.execute("INSERT INTO doctors (user_id, specialization) " +
                     "SELECT id, 'Surgeon' FROM users WHERE email = 'surgeon@hospital.com' " +
                     "ON CONFLICT (user_id) DO NOTHING;");
 
             statement.execute("INSERT INTO users (name, email, password, role) VALUES " +
-                    "('Dr. Adams', 'neurologist@hospital.com', 'pass125', 'doctor') " +
+                    "('Dr. John', 'therapist@hospital.com', 'pass124', 'doctor') " +
                     "ON CONFLICT (email) DO NOTHING;");
             statement.execute("INSERT INTO doctors (user_id, specialization) " +
-                    "SELECT id, 'Neurology' FROM users WHERE email = 'neurologist@hospital.com' " +
+                    "SELECT id, 'Therapist' FROM users WHERE email = 'therapist@hospital.com' " +
                     "ON CONFLICT (user_id) DO NOTHING;");
 
             statement.execute("INSERT INTO users (name, email, password, role) VALUES " +
-                    "('Dr. Wilson', 'oncologist@hospital.com', 'pass126', 'doctor') " +
+                    "('Dr. Wilson', 'psychologist@hospital.com', 'pass125', 'doctor') " +
                     "ON CONFLICT (email) DO NOTHING;");
             statement.execute("INSERT INTO doctors (user_id, specialization) " +
-                    "SELECT id, 'Oncology' FROM users WHERE email = 'oncologist@hospital.com' " +
-                    "ON CONFLICT (user_id) DO NOTHING;");
-
-            statement.execute("INSERT INTO users (name, email, password, role) VALUES " +
-                    "('Dr. Elizabeth', 'psychiatrist@hospital.com', 'pass127', 'doctor') " +
-                    "ON CONFLICT (email) DO NOTHING;");
-            statement.execute("INSERT INTO doctors (user_id, specialization) " +
-                    "SELECT id, 'Psychiatrist' FROM users WHERE email = 'psychiatrist@hospital.com' " +
-                    "ON CONFLICT (user_id) DO NOTHING;");
-
-            statement.execute("INSERT INTO users (name, email, password, role) VALUES " +
-                    "('Dr. Emma', 'radiologist@hospital.com', 'pass128', 'doctor') " +
-                    "ON CONFLICT (email) DO NOTHING;");
-            statement.execute("INSERT INTO doctors (user_id, specialization) " +
-                    "SELECT id, 'Radiologist' FROM users WHERE email = 'radiologist@hospital.com' " +
-                    "ON CONFLICT (user_id) DO NOTHING;");
-
-            statement.execute("INSERT INTO users (name, email, password, role) VALUES " +
-                    "('Dr. Ali', 'hematology@hospital.com', 'pass129', 'doctor') " +
-                    "ON CONFLICT (email) DO NOTHING;");
-            statement.execute("INSERT INTO doctors (user_id, specialization) " +
-                    "SELECT id, 'Hematology' FROM users WHERE email = 'hematology@hospital.com' " +
-                    "ON CONFLICT (user_id) DO NOTHING;");
-
-            statement.execute("INSERT INTO users (name, email, password, role) VALUES " +
-                    "('Dr. Sanat', 'pulmonologist@hospital.com', 'pass130', 'doctor') " +
-                    "ON CONFLICT (email) DO NOTHING;");
-            statement.execute("INSERT INTO doctors (user_id, specialization) " +
-                    "SELECT id, 'Pulmonology' FROM users WHERE email = 'pulmonologist@hospital.com' " +
-                    "ON CONFLICT (user_id) DO NOTHING;");
-
-            statement.execute("INSERT INTO users (name, email, password, role) VALUES " +
-                    "('Dr. Zukhra', 'dermatologist@hospital.com', 'pass131', 'doctor') " +
-                    "ON CONFLICT (email) DO NOTHING;");
-            statement.execute("INSERT INTO doctors (user_id, specialization) " +
-                    "SELECT id, 'Dermatology' FROM users WHERE email = 'dermatologist@hospital.com' " +
+                    "SELECT id, 'Psychologist' FROM users WHERE email = 'psychologist@hospital.com' " +
                     "ON CONFLICT (user_id) DO NOTHING;");
 
             // Default Medicines

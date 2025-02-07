@@ -14,4 +14,8 @@ public class Medicine {
     public int getId() { return id; }
     public String getName() { return name; }
     public String getDosage() { return dosage; }
+
+    public String getDescription() {
+        return dosage;
+    }
 }

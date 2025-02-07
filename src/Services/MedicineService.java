@@ -1,25 +1,29 @@
 package Services;
 
+import Model.Doctor;
 import Model.Medicine;
 import Repositories.MedicineRepository;
 import java.util.List;
 
 public class MedicineService {
-    private final MedicineRepository medicineRepository;
+    private MedicineRepository medicineRepository;
 
     public MedicineService(MedicineRepository medicineRepository) {
         this.medicineRepository = medicineRepository;
+    }
+
+    public void addMedicine(Medicine medicine) {
+        medicineRepository.addMedicine(medicine);
     }
 
     public List<Medicine> getAllMedicines() {
         return medicineRepository.getAllMedicines();
     }
 
-    public void addMedicine(Medicine medicine) {
-        // Logic for adding medicine
-    }
 
     public void deleteMedicine(int medicineId) {
-        // Logic for deleting medicine
+        medicineRepository.deleteMedicine(medicineId);
     }
+
+
 }

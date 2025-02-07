@@ -81,5 +81,51 @@ public class DatabaseInitializer {
         statement.execute("INSERT INTO doctors (name, email, password, specialization) VALUES " +
                 "('Dr. Smith', 'doctor@hospital.com', 'pass123', 'Cardiology') " +
                 "ON CONFLICT (email) DO NOTHING;");
+
+        statement.execute("INSERT INTO doctors (name, email, password, specialization) VALUES " +
+                "('Dr. House', 'surgeon@hospital.com', 'pass124', 'Surgeon') " +
+                "ON CONFLICT (email) DO NOTHING;");
+
+        statement.execute("INSERT INTO doctors (name, email, password, specialization) VALUES " +
+                "('Dr. Adams', 'neurologist@hospital.com', 'pass125', 'Neurology') " +
+                "ON CONFLICT (email) DO NOTHING;");
+
+        statement.execute("INSERT INTO doctors (name, email, password, specialization) VALUES " +
+                "('Dr. Wilson', 'oncologist@hospital.com', 'pass126', 'Oncology') " +
+                "ON CONFLICT (email) DO NOTHING;");
+
+        statement.execute("INSERT INTO doctors (name, email, password, specialization) VALUES " +
+                "('Dr. Elizabeth', 'psychiatrist@hospital.com', 'pass127', 'Psychiatrist') " +
+                "ON CONFLICT (email) DO NOTHING;");
+
+        statement.execute("INSERT INTO doctors (name, email, password, specialization) VALUES " +
+                "('Dr. Emma', 'radiologist@hospital.com', 'pass128', 'Radiologist') " +
+                "ON CONFLICT (email) DO NOTHING;");
+
+        statement.execute("INSERT INTO doctors (name, email, password, specialization) VALUES " +
+                "('Dr. Ali', 'hematology@hospital.com', 'pass129', 'Hematology') " +
+                "ON CONFLICT (email) DO NOTHING;");
+
+        statement.execute("INSERT INTO doctors (name, email, password, specialization) VALUES " +
+                "('Dr. Sanat', 'pulmonologist@hospital.com', 'pass130', 'Pulmonology') " +
+                "ON CONFLICT (email) DO NOTHING;");
+
+        statement.execute("INSERT INTO doctors (name, email, password, specialization) VALUES " +
+                "('Dr. Zukhra', 'dermatologist@hospital.com', 'pass131', 'Dermatology') " +
+                "ON CONFLICT (email) DO NOTHING;");
+
+        statement.execute("INSERT INTO doctors (name, email, password, specialization) VALUES " +
+                "('Dr. Khaimuldin', 'endocrinologist@hospital.com', 'pass132', 'Endocrinology') " +
+                "ON CONFLICT (email) DO NOTHING;");
+
+        statement.execute("INSERT INTO doctors (name, email, password, specialization) VALUES " +
+                "('Dr. John', 'rheumatologist@hospital.com', 'pass133', 'Rheumatology') " +
+                "ON CONFLICT (email) DO NOTHING;");
+
+        statement.execute("INSERT INTO doctors (name, email, password, specialization) VALUES " +
+                "('Dr. Jessica', 'laboratory@hospital.com', 'pass134', 'Laboratory Medicine') " +
+                "ON CONFLICT (email) DO NOTHING;");
+
+
     }
 }

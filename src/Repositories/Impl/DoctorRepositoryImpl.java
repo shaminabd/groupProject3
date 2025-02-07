@@ -54,18 +54,26 @@ public class DoctorRepositoryImpl implements DoctorRepository {
     @Override
     public List<Doctor> getAllDoctors() {
         List<Doctor> doctors = new ArrayList<>();
-        String query = "SELECT * FROM doctors";
+        String query = "SELECT d.id, u.name, u.email, u.password, d.specialization " +
+                "FROM doctors d " +
+                "JOIN users u ON d.user_id = u.id";
         try (Connection connection = dbConnection.getConnection();
              PreparedStatement stmt = connection.prepareStatement(query)) {
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                doctors.add(new Doctor(rs.getInt("id"), rs.getString("name"), rs.getString("email"), rs.getString("password"), rs.getString("specialization")));
+                int id = rs.getInt("id");
+                String name = rs.getString("name");  // Now exists in the ResultSet
+                String email = rs.getString("email");
+                String password = rs.getString("password");
+                String specialization = rs.getString("specialization");
+                doctors.add(new Doctor(id, name, email, password, specialization));
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return doctors;
     }
+
 
     @Override
     public void updateDoctor(Doctor doctor) {

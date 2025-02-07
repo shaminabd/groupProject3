@@ -49,6 +49,7 @@ public class AuthService {
                 if (user instanceof Patient) {
                     Patient patient = (Patient) user;
                     user = new Patient(newUserId, patient.getName(), patient.getEmail(), patient.getPassword(), patient.getHealthHistory());
+                    userRepository.addPatient(newUserId, patient.getHealthHistory());  // ✅ Add to patients table
                 }
                 break;
             default:

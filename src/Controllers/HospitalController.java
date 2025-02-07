@@ -13,4 +13,14 @@ public class HospitalController {
     public void addHospital(Hospital hospital) {
         hospitalService.addHospital(hospital);
     }
+
+    public void addDoctorToHospital(int addHospitalId, int addDoctorId) {
+    }
+
+    public void removeDoctorFromHospital(int removeHospitalId, int removeDoctorId) {
+
+    }
+
+    public void removeHospital(int hospitalId) {
+    }
 }

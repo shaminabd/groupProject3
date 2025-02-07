@@ -13,4 +13,13 @@ public class BedController {
     public void addBed(Bed bed) {
         bedService.addBed(bed);
     }
+
+    public void checkAvailability() {
+    }
+
+    public void createBed() {
+    }
+
+    public void removeBed() {
+    }
 }
